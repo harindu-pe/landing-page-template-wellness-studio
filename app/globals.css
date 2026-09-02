@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ============================================================
+   COUNTERPOSE — DESIGN SYSTEM
+   Bone / Ink / Plunge. Warm ground, cold accent.
+   ============================================================ */
+
+@theme {
+  /* --- Palette: near-monochrome warm base, one owned accent --- */
+  --color-bone:        #EAE5DB;  /* warm-white ground  */
+  --color-bone-deep:   #DED8CB;  /* recessed surface   */
+  --color-ink:         #141110;  /* warm-black         */
+  --color-ink-2:       #1E1A18;  /* raised on dark     */
+  --color-plunge:      #2743F0;  /* THE accent — cold ultramarine */
+  --color-plunge-lift: #6E80FF;  /* accent, legible on ink        */
+
+  /* --- Functional tokens --- */
+  --color-text-primary:   #141110;
+  /* Alphas chosen so both tiers clear WCAG AA (4.5:1) on the bone ground:
+     secondary ~6.4:1, tertiary ~4.8:1. The hierarchy is carried by size,
+     case and tracking as much as by value. */
+  --color-text-secondary: rgba(20, 17, 16, 0.72);
+  --color-text-tertiary:  rgba(20, 17, 16, 0.64);
+  --color-rule:           rgba(20, 17, 16, 0.14);
+  --color-rule-strong:    rgba(20, 17, 16, 0.28);
+
+  /* --- Type --- */
+  --font-display: var(--ff-display);
+  --font-serif:   var(--ff-serif);
+  --font-mono:    var(--ff-mono);
+
+  /* --- Motion: custom curves only. No ease/linear. --- */
+  --ease-out-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart:    cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-expo:  cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-breath-in:    cubic-bezier(0.34, 0.02, 0.28, 1);
+  --ease-breath-out:   cubic-bezier(0.62, 0.01, 0.36, 1);
+}
+
+/* ============================================================
+   TYPE SCALE — 22:1 display-to-micro contrast
+   ============================================================ */
+:root {
+  --t-hero:  clamp(3.6rem, 18.5vw, 6.5rem);   /* mobile: fills the screen */
+  --t-lede:  clamp(1.0625rem, 0.95rem + 0.42vw, 1.25rem);
+  --t-meta:  0.75rem;
+  --t-micro: 0.6875rem;                        /* 11px         */
+
+  --gutter: clamp(1.25rem, 3.2vw, 3rem);
+  --header-h: clamp(4.25rem, 6vw, 5.5rem);
+}
+
+@media (min-width: 768px) {
+  :root { --t-hero: clamp(6.5rem, 11.2vw, 12.5rem); }
+}
+
+/* ============================================================
+   RESET / GROUND
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* `clip` (not hidden) — never turns the root into a scroll container. */
+  overflow-x: clip;
+  /* Lenis drives scroll; never let the UA fight it. */
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bone);
+  color: var(--color-text-primary);
+  font-family: var(--font-display), "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  overflow-x: clip;
+}
+
+/* Paper tooth. Static, cheap, no gradient wash. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.34;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   MICRO-INTERACTIONS — branded selection, focus, cursor
+   ============================================================ */
+::selection {
+  background: var(--color-plunge);
+  color: var(--color-bone);
+  text-shadow: none;
+}
+
+:focus { outline: none; }
+
+:focus-visible {
+  outline: 2px solid var(--color-plunge);
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+.on-ink :focus-visible { outline-color: var(--color-plunge-lift); }
+
+/* Native cursor is suppressed only once the custom cursor is live,
+   and only for precise pointers. Keyboard + touch keep everything. */
+html.cursor-live,
+html.cursor-live * { cursor: none; }
+
+@media (pointer: coarse), (hover: none) {
+  html.cursor-live, html.cursor-live * { cursor: auto; }
+}
+
+/* ============================================================
+   TYPOGRAPHY PRIMITIVES
+   Declared in the components layer so Tailwind utilities always
+   win over them. Without this, .u-hero silently beats every
+   text-[...] and mt-* applied alongside it.
+   ============================================================ */
+@layer components {
+.u-hero {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-hero);
+  line-height: 0.795;
+  letter-spacing: -0.048em;
+  text-transform: uppercase;
+}
+
+.u-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+.u-mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.u-lede {
+  font-size: var(--t-lede);
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+  color: var(--color-text-secondary);
+  text-wrap: pretty;
+}
+}
+
+/* ============================================================
+   REVEAL MASKS — line-by-line, transform only
+   ============================================================ */
+.mask { display: block; overflow: hidden; }
+.mask > * { display: block; will-change: transform; }
+
+/* Pre-paint state, so nothing flashes between SSR paint and hydration.
+   Units match what GSAP writes (percent, not px) or GSAP will read these
+   back as a pixel offset and stack its own on top. */
+.js .anim-line > *,
+.js .anim-plate > * { transform: translateY(105%); }
+.js .anim-fade      { opacity: 0; }
+.js .anim-rule      { transform: scaleX(0); }
+
+/* Below-the-fold reveals: CSS holds opacity only, GSAP owns the transform.
+   Mixing the two on one property is what makes percent/px offsets stack. */
+.js [data-reveal]   { opacity: 0; }
+
+/* ============================================================
+   REDUCED MOTION — full parity, nothing hidden
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .js .anim-line > *,
+  .js .anim-plate > * { transform: none !important; }
+  .js .anim-fade,
+  .js [data-reveal]   { opacity: 1 !important; }
+  .js .anim-rule      { transform: none !important; }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
